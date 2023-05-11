@@ -1,3 +1,5 @@
+import cProfile
+import datetime
 import random
 import time
 
@@ -5,6 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
+from scipy.interpolate import make_interp_spline
 
 
 class BSTNode:
@@ -304,7 +307,6 @@ def run_experiments(total_experiments, start_n, worst_case=False):
 
     print(f"\rFinished running all {total_experiments} experiments...")
 
-    sns.set_theme(style="whitegrid")
     df = pd.DataFrame({
         "num": np.array(total_n),
         "avg_insert": np.array(avg_insert_time),
@@ -312,9 +314,13 @@ def run_experiments(total_experiments, start_n, worst_case=False):
         "avg_search": np.array(avg_search_time),
         # "prep_time": np.array(prep_time),
     })
+    df.to_csv(
+        f"bst_operations{'_worst_case' if worst_case else ''}_{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}.csv"
+    )
 
     # sns.lineplot(data=df, x="num", y="prep_time")
 
+    sns.set_theme(style="whitegrid")
     sns.lineplot(data=pd.melt(df, ["num"]), x="num", y="value", hue="variable", legend=False)
     plt.title(f"BST operations time comparison{' (worst case)' if worst_case else ''}")
     plt.xlabel("Number of elements")
@@ -327,16 +333,39 @@ def run_experiments(total_experiments, start_n, worst_case=False):
     plt.show()
 
 
+def plot(csv_filename):
+    df = pd.read_csv(csv_filename)
+
+    x = df["num"].to_numpy()
+    avg_insert = df["avg_insert"].to_numpy()
+    avg_delete = df["avg_delete"].to_numpy()
+    avg_search = df["avg_search"].to_numpy()
+
+    avg_insert_spline = make_interp_spline(x, avg_insert, k=1)
+    # avg_delete_spline = make_interp_spline(avg_delete, y)
+    # avg_search_spline = make_interp_spline(avg_search, y)
+
+    x_ = np.linspace(x.min(), x.max(), 10000)
+    y = avg_insert_spline(x_)
+
+    plt.plot(x_, y)
+    plt.title("Plot Smooth Curve Using the scipy.interpolate.make_interp_spline() Class")
+    plt.xlabel("X")
+    plt.ylabel("Y")
+    plt.show()
+
+
+def main():
+    for i in range(100):
+        t = BST()
+
+        for j in range((i + 1) * 1000):
+            # val = random.randrange(100000)
+            t.insert(j)
+
+
 if __name__ == "__main__":
+    # plot("bst_operations_20230511122253.csv")
     run_experiments(100, 1_000)
-    # t = BST()
-    #
-    # for _ in range(15):
-    #     val = random.randrange(100)
-    #     t.insert(val)
-    #     print(val, end=" ")
-    #
-    # print()
-    # t.pretty_print()
-    # print(t.balance())
-    # print(t.height())
+    # main()
+    # cProfile.run("main()")
