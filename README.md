@@ -6,6 +6,11 @@ Previously, I already did a time-consuming profiling to prove that
 BSTree's operations has `O(n log n)` at worst using only `time` module
 and `seaborn` plots. 
 
+## Prerequisites
+
+* Installed [python](https://www.python.org/downloads/)
+* Installed required libs: `pip install -r requirements.txt`
+
 ## Results
 
 ### Scalene profiler
@@ -14,6 +19,15 @@ Firstly, I tried with [scalene](https://github.com/plasma-umass/scalene) lib.
 Authors say it is one of the fastest python profiles which can catch 
 both CPU and memory usages. In case of profiling data structures and 
 other algorithms for Big-O, I don't see it useful.
+
+To run this profiler you need to execute following command:
+
+```bash
+$ scalene bst.py
+```
+
+This will profile your code and save the record in different formats (html and json),
+then it automatically opens a generated html report in browser.
 
 Below you can see a report for 100 hundred experiments inserting 
 from 1000 to 100000 elements incrementally:
@@ -40,21 +54,36 @@ With `memory_profile` we can see from the plots a time consumption during experi
 And the fact that it is increasing linearly relative to growth of the number of 
 inserted elements.
 
+To run this profile you need to execute following command:
+
+```bash
+$ mprof run python bst.py
+```
+
+This will create a new file with `*.dat` extension. To plot 
+this results you need to execute this command in terminal:
+
+```bash
+$ mprof plot
+```
+
+This plots the last `*.dat` file results.
+
 10 Experiments (from 1000 to 10000 inserted random elements):
 
 ![Mem prof for 10 experiments](./images/mprof_10.png)
 
 20 Experiments (from 1000 to 20000 inserted random elements):
 
-![Mem prof for 10 experiments](./images/mprof_20.png)
+![Mem prof for 20 experiments](./images/mprof_20.png)
 
 50 Experiments (from 1000 to 50000 inserted random elements):
 
-![Mem prof for 10 experiments](./images/mprof_50.png)
+![Mem prof for 50 experiments](./images/mprof_50.png)
 
 50 worst-case experiments (from 1000 to 50000 inserted elements):
 
-![Mem prof for 10 experiments](./images/mprof_50_worst.png)
+![Mem prof for 50 experiments worst case](./images/mprof_50_worst.png)
 
 100 Experiments (from 1000 to 100000 inserted random elements):
 
